@@ -2,7 +2,8 @@ import { initializeApp } from 'firebase/app';
 import {
   getFirestore, collection, onSnapshot,
   addDoc, deleteDoc, doc,
-  query, where
+  query, where,
+  orderBy, serverTimestamp
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -30,40 +31,15 @@ const db = getFirestore();
 // get an access to a specific collection (in our case - books)
 const colRef = collection(db, 'books');
 
-// Real time collection data
-// ---------------------------
-// Set a subscription (or real time listener) to a firestore collection
-// to apply changes on a webpage without refreshing it
-// ---------------------------------------------------------
-// The second argument is a callback that fires every time
-// there's a change in the collection and it send us back a new snapshot
-// and also once initially as well
-onSnapshot(colRef, (snapshot) => {
-  let books = [];
-  snapshot.docs.forEach((doc) => {
-    books.push({ ...doc.data(), id: doc.id });
-  });
-  console.log('All books:');
-  console.log(books);
-});
-
 // Firestore queries
-const q = query(colRef, where('author', '==', 'Alexandre Dumas'));
+const q = query(colRef, orderBy('createdAt'));
 
-// We're gonna get real time data whenever the data changes
-// that includes the 'author' property to be 'Alexandre Dumas'
-// -------------------------------------------------------------
-// So now if we add a new book where the 'author' is 'Alexandre Dumas'
-// that will fire this function right here where we get a new snapshot
-// ---------------------------------------------------------------------
-// If we add a new book where the 'author' is NOT 'Alexandre Dumas'
-// then we're NOT gonna get a new snapshot
+// Real time collection data
 onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
   });
-  console.log('Alexandre Dumas\' books:');
   console.log(books);
 });
 
@@ -74,7 +50,8 @@ addBookForm.addEventListener('submit', (e) => {
 
   addDoc(colRef, {
     title: addBookForm.title.value,
-    author: addBookForm.author.value
+    author: addBookForm.author.value,
+    createdAt: serverTimestamp()
   })
     .then(() => {
       addBookForm.reset();
