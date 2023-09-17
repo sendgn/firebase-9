@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import {
-  getFirestore, collection, getDocs,
+  getFirestore, collection, onSnapshot,
   addDoc, deleteDoc, doc
 } from 'firebase/firestore'
 
@@ -26,18 +26,20 @@ const db = getFirestore();
 // get an access to a specific collection (in our case - books)
 const colRef = collection(db, 'books');
 
-// Get collection data
-getDocs(colRef)
-  .then((snapshot) => {
-    let books = [];
-    snapshot.docs.forEach((doc) => {
-      books.push({ ...doc.data(), id: doc.id });
-    });
-    console.log(books);
-  })
-  .catch (err => {
-    console.log(err.message);
-  })
+// Real time collection data
+// Set a subscription (or realtime listener) to a firestore collection
+// to apply changes on a webpage without refreshing it
+// -----------------------------------------------------------
+// The second argument is a callback that fires every time
+// there's a change in the collection and it send us back a new snapshot
+// and also once initially as well
+onSnapshot(colRef, (snapshot) => {
+  let books = [];
+  snapshot.docs.forEach((doc) => {
+    books.push({ ...doc.data(), id: doc.id });
+  });
+  console.log(books);
+});
 
 // Adding documents
 const addBookForm = document.querySelector('.add');
