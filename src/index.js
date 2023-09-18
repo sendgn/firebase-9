@@ -4,8 +4,11 @@ import {
   addDoc, deleteDoc, doc,
   getDocs, query, where,
   orderBy, serverTimestamp,
-  getDoc, updateDoc
-} from 'firebase/firestore'
+  getDoc, updateDoc,
+} from 'firebase/firestore';
+import {
+  getAuth
+} from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-qOtsmwlOtOUNHQbx6rf_enkxzc2ZlHs",
@@ -26,6 +29,8 @@ initializeApp(firebaseConfig);
 // it represents our data base connection, and anytime we do smth
 // with the database like reach out to get data we're gonna use this constant
 const db = getFirestore();
+// initialize the authentication service
+const auth = getAuth();
 
 // Collection ref
 // ----------------
@@ -112,3 +117,15 @@ updateForm.addEventListener('submit', (e) => {
       updateForm.reset();
     })
 });
+
+// Firebase authentication
+// -----------------------------
+// Firebase auth uses json webtoken to authenticate users (sign up, log in/out)
+// --------------------------------------------
+// When a user logged in this web token
+// is sent to the firebase server on every request
+// so the firebase can authenticate the request
+// ---------------------------------------
+// We can then use that to lockdown other services
+// so that only authenticated users can access certain features of our site
+// such as reading db data or uploading files
