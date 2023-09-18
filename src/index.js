@@ -7,7 +7,8 @@ import {
   getDoc, updateDoc,
 } from 'firebase/firestore';
 import {
-  getAuth
+  getAuth,
+  createUserWithEmailAndPassword
 } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -129,3 +130,23 @@ updateForm.addEventListener('submit', (e) => {
 // We can then use that to lockdown other services
 // so that only authenticated users can access certain features of our site
 // such as reading db data or uploading files
+
+// Signing users up
+const signupForm = document.querySelector('.signup');
+signupForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const email = signupForm.email.value;
+  const password = signupForm.password.value;
+
+  // callback takes in an argument - a user credential object
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+      console.log('user created:', cred.user);
+      console.log('unique id:', cred.user.uid);
+      signupForm.reset();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+});
