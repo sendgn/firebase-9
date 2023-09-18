@@ -53,7 +53,10 @@ const colRef = collection(db, 'books');
 const q = query(colRef, orderBy('createdAt'));
 
 // Realtime collection data (but callback doesn't fire when we change collection directly from firebase website)
-onSnapshot(q, (snapshot) => {
+// -------------------------------------------
+// onSnapshot() returns an subscribe function
+// which is stored inside this constant
+const unsubCol = onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
@@ -93,16 +96,16 @@ deleteBookForm.addEventListener('submit', (e) => {
 // Get a single document
 const docRef = doc(db, 'books', '3l6gzWekugv3x66mIIk9');
 
-// get document once
+// Real time subscription to a document
+const unsubDoc = onSnapshot(docRef, (doc) => {
+  console.log(doc.data(), doc.id);
+});
+
+// get document once without a subscription
 // getDoc(docRef)
 //   .then((doc) => {
 //     console.log(doc.data(), doc.id);
 //   });
-
-// Real time subscription to a document
-onSnapshot(docRef, (doc) => {
-  console.log(doc.data(), doc.id);
-});
 
 // Updating a document
 const updateForm = document.querySelector('.update');
@@ -177,7 +180,6 @@ loginForm.addEventListener('submit', (e) => {
   signInWithEmailAndPassword(auth, email, password)
     .then((cred) => {
       console.log('user logged in:', cred.user);
-      loginForm.reset();
     })
     .catch((err) => {
       console.log(err.message);
@@ -187,9 +189,21 @@ loginForm.addEventListener('submit', (e) => {
 // Subscribing to auth changes
 // -------------------------------
 // if a user signs up, logs in/out then callback fires
-onAuthStateChanged(auth, (user) => {
+const unsubAuth = onAuthStateChanged(auth, (user) => {
   // if user logged out --> user is null
   console.log('------------------------------')
   console.log('user status changed:', user);
   console.log('------------------------------')
+});
+
+// Unsubscribing changes
+// -----------------------
+// it's a good practice to unsubscribe from any subscription
+// when you no longer need it
+const unsubButton = document.querySelector('.unsub');
+unsubButton.addEventListener('click', () => {
+  console.log('unsubscribing');
+  unsubCol();
+  unsubDoc();
+  unsubAuth();
 });
