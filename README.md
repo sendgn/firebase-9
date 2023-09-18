@@ -1,6 +1,5 @@
 # Firebase 9 Dojo
 Firebase 9 basics tutorial
-___
 
 ## Setup and run
 ```bash
