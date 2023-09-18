@@ -2,8 +2,9 @@ import { initializeApp } from 'firebase/app';
 import {
   getFirestore, collection, onSnapshot,
   addDoc, deleteDoc, doc,
-  query, where,
-  orderBy, serverTimestamp
+  getDocs, query, where,
+  orderBy, serverTimestamp,
+  getDoc
 } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -31,10 +32,19 @@ const db = getFirestore();
 // get an access to a specific collection (in our case - books)
 const colRef = collection(db, 'books');
 
+// Real time collection data
+// onSnapshot(colRef, (snapshot) => {
+//   let books = [];
+//   snapshot.docs.forEach((doc) => {
+//     books.push({ ...doc.data(), id: doc.id });
+//   });
+//   console.log(books);
+// });
+
 // Firestore queries
 const q = query(colRef, orderBy('createdAt'));
 
-// Real time collection data
+// Realtime collection data (but callback doesn't fire when we change collection directly from firebase website)
 onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
@@ -69,5 +79,19 @@ deleteBookForm.addEventListener('submit', (e) => {
   deleteDoc(docRef)
     .then(() => {
       deleteBookForm.reset();
-    })
+    });
+});
+
+// Get a single document
+const docRef = doc(db, 'books', '3l6gzWekugv3x66mIIk9');
+
+// get document once
+// getDoc(docRef)
+//   .then((doc) => {
+//     console.log(doc.data(), doc.id);
+//   });
+
+// Real time subscription to a document
+onSnapshot(docRef, (doc) => {
+  console.log(doc.data(), doc.id);
 });
