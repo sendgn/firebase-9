@@ -8,7 +8,8 @@ import {
 } from 'firebase/firestore';
 import {
   getAuth,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  signOut, signInWithEmailAndPassword
 } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -139,12 +140,43 @@ signupForm.addEventListener('submit', (e) => {
   const email = signupForm.email.value;
   const password = signupForm.password.value;
 
-  // callback takes in an argument - a user credential object
+  // By default when we create a new user using this function
+  // firebase automatically logs them in after they've signed up,
+  // so at this moment a user would be considered to be logged in
   createUserWithEmailAndPassword(auth, email, password)
+    // callback takes in an argument - a user credential object
     .then((cred) => {
       console.log('user created:', cred.user);
       console.log('unique id:', cred.user.uid);
       signupForm.reset();
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+});
+
+// Logging in and out
+const logoutButton = document.querySelector('.logout');
+logoutButton.addEventListener('click', () => {
+  signOut(auth)
+    .then(() => {
+      console.log('the user signed out');
+    })
+    .catch((err) => {
+      console.log(err.message);
+    })
+});
+
+const loginForm = document.querySelector('.login');
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const email = loginForm.email.value;
+  const password = loginForm.password.value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+      console.log('user logged in:', cred.user);
+      loginForm.reset();
     })
     .catch((err) => {
       console.log(err.message);
