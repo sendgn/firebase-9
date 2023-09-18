@@ -15,4 +15,5 @@ npm run build
 
 ```
 Each topic is in its own branch
+main branch includes all topics
 ```
