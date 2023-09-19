@@ -14,6 +14,4 @@ npm run build
 ```
 
 ## Branches
-```
 Each branch corresponds to a specific topic
-```
