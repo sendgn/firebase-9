@@ -13,7 +13,7 @@ npm install
 npm run build
 ```
 
+## Branches
 ```
-Each topic is in its own branch
-main branch includes all topics
+Each branch corresponds to a specific topic
 ```
